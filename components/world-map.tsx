@@ -16,7 +16,7 @@ interface ShipmentNode {
   id: string
   lat: number
   lng: number
-  status: "delivered" | "delayed" | "blocked"
+  status: "On-time" | "delayed" | "major-delay"
   location: string
   shipmentIds: string[]
   region: string
@@ -27,7 +27,7 @@ interface ShipmentDetail {
   id: string
   start: string
   destination: string
-  status: "delivered" | "delayed" | "blocked"
+  status: "On-time" | "delayed" | "major-delay"
   eta: string
   transportMode : string 
 }
@@ -37,7 +37,7 @@ const shipmentNodes: ShipmentNode[] = [
     id: "1",
     lat: 40.7128,
     lng: -74.0060,
-    status: "delivered",
+    status: "On-time",
     location: "New York, USA",
     shipmentIds: ["SH001", "SH002", "SH018", "SH001-D", "SH001-L", "SH001-B"],
     region: "north-america",
@@ -57,7 +57,7 @@ const shipmentNodes: ShipmentNode[] = [
     id: "3",
     lat: 51.5074,
     lng: -0.1278,
-    status: "delivered",
+    status: "On-time",
     location: "London, UK",
     shipmentIds: ["SH004", "SH005", "SH020", "SH003-D", "SH003-L", "SH003-B"],
     region: "europe",
@@ -67,7 +67,7 @@ const shipmentNodes: ShipmentNode[] = [
     id: "4",
     lat: 53.5511,
     lng: 9.9937,
-    status: "blocked",
+    status: "major-delay",
     location: "Hamburg, Germany",
     shipmentIds: ["SH006", "SH021", "SH004-D", "SH004-L", "SH004-B"],
     region: "europe",
@@ -87,7 +87,7 @@ const shipmentNodes: ShipmentNode[] = [
     id: "6",
     lat: 19.0760,
     lng: 72.8777,
-    status: "delivered",
+    status: "On-time",
     location: "Mumbai, India",
     shipmentIds: ["SH009", "SH023", "SH006-D", "SH006-L", "SH006-B"],
     region: "asia",
@@ -107,7 +107,7 @@ const shipmentNodes: ShipmentNode[] = [
     id: "8",
     lat: 35.6762,
     lng: 139.6503,
-    status: "delivered",
+    status: "On-time",
     location: "Tokyo, Japan",
     shipmentIds: ["SH012", "SH025", "SH008-D", "SH008-L", "SH008-B"],
     region: "asia",
@@ -117,7 +117,7 @@ const shipmentNodes: ShipmentNode[] = [
     id: "9",
     lat: 6.5244,
     lng: 3.3792,
-    status: "blocked",
+    status: "major-delay",
     location: "Lagos, Nigeria",
     shipmentIds: ["SH013", "SH014", "SH026", "SH009-D", "SH009-L", "SH009-B"],
     region: "africa",
@@ -127,7 +127,7 @@ const shipmentNodes: ShipmentNode[] = [
     id: "10",
     lat: -23.5505,
     lng: -46.6333,
-    status: "delivered",
+    status: "On-time",
     location: "São Paulo, Brazil",
     shipmentIds: ["SH015", "SH027", "SH010-D", "SH010-L", "SH010-B"],
     region: "south-america",
@@ -147,7 +147,7 @@ const shipmentNodes: ShipmentNode[] = [
 
 
 const generateShipmentDetails = (node: ShipmentNode): ShipmentDetail[] => {
-  const statuses: ("delivered" | "delayed" | "blocked")[] = ["delivered", "delayed", "blocked"]
+  const statuses: ("delivered" | "delayed" | "major-delay")[] = ["delivered", "delayed", "major-delay"]
   const cities = [
     "New York", "Los Angeles", "London", "Hamburg", "Istanbul", 
     "Mumbai", "Shanghai", "Tokyo", "Lagos", "São Paulo", "Sydney"
@@ -205,7 +205,7 @@ const generateShipmentDetails = (node: ShipmentNode): ShipmentDetail[] => {
     
     const eta = status === "delivered" 
       ? "Delivered"
-      : status === "blocked"
+      : status === "major-delay"
       ? "On Hold"
       : `${etaDate.toLocaleDateString()}`
     
@@ -250,7 +250,7 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
     switch (status) {
       case "delivered": return "#22c55e"
       case "delayed": return "#eab308"
-      case "blocked": return "#ef4444"
+      case "major-delay": return "#ef4444"
       default: return "#6b7280"
     }
   }, [])
@@ -260,6 +260,7 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
       case "delivered": return "On-time"
       case "delayed": return "Delayed"
       case "blocked": return "major-delay"
+      case "major-delay": return "major-delay"
       default: return "Unknown"
     }
   }, [])
@@ -363,8 +364,10 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
       
       const pieData = [
         { name: "On-Time", value: statusCounts.delivered || 0, color: "#22c55e" },
+        { name: "On-time", value: statusCounts.delivered || 0, color: "#22c55e" },
         { name: "Delayed", value: statusCounts.delayed || 0, color: "#eab308" },
         { name: "major-delay", value: statusCounts.blocked || 0, color: "#ef4444" },
+        { name: "Major Delay", value: statusCounts.blocked || 0, color: "#ef4444" },
       ].filter(item => item.value > 0)
 
       const total = pieData.reduce((sum, item) => sum + item.value, 0)
@@ -453,8 +456,8 @@ infoWindowContent.innerHTML = `
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50 sticky top-0">
             <tr>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shipment ID</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Origin</th>
               <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
               <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transport mode</th>
@@ -587,7 +590,7 @@ infoWindowContent.innerHTML = `
           <div className="space-y-3">
             <div className="flex items-center gap-4 text-sm">
               <div className="w-5 h-5 rounded-full bg-green-500 border-2 border-white shadow-lg"></div>
-              <span className="font-medium text-slate-700">Delivered</span>
+              <span className="font-medium text-slate-700">In-time</span>
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="w-5 h-5 rounded-full bg-yellow-500 border-2 border-white shadow-lg"></div>
@@ -595,7 +598,7 @@ infoWindowContent.innerHTML = `
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="w-5 h-5 rounded-full bg-red-500 border-2 border-white shadow-lg"></div>
-              <span className="font-medium text-slate-700">Blocked</span>
+              <span className="font-medium text-slate-700">Major Delay</span>
             </div>
           </div>
         </div>

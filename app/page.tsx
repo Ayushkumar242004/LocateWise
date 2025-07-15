@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { KPIDashboard } from "@/components/kpi-dashboard"
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +23,8 @@ import { RiskStackedBar } from "@/components/risk-stacked-bar"
 import { ExceptionStackedBar } from "@/components/exception-stacked-bar"
 import { WorldMap } from "@/components/world-map"
 import { MultiSelect } from "@/components/multi-select"
+import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 const regions = [
   { value: "asia", label: "Asia" },
@@ -45,27 +48,62 @@ function DashboardContent() {
   const [selectedProduct, setSelectedProduct] = useState<string>("")
   const [shipmentId, setShipmentId] = useState<string>("")
   const { state } = useSidebar()
+   const [activeTab, setActiveTab] = useState<"overview" | "kpi">("overview")
+ const router = useRouter()
+
  const handleRemoveRegion = (region: string) => {
     setSelectedRegions((prev) => prev.filter((r) => r !== region))
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex">
+      
       <Sidebar className="border-r shadow-xl transition-all duration-300 ease-in-out w-[280px] xl:w-[320px] fixed h-full z-10">
         <SidebarHeader className="border-b bg-white/60 backdrop-blur-md">
           <div className="flex items-center gap-3 px-4 py-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg">
-              <Package className="h-5 w-5 text-white" />
-            </div>
-            <div
-              className={`transition-all duration-300 ${state === "collapsed" ? "opacity-0 w-0 overflow-hidden" : "opacity-100"}`}
-            >
-              <h1 className="text-xl font-bold text-slate-900">LocateWise</h1>
-              <p className="text-sm text-slate-600">Shipment Tracking</p>
-            </div>
+           
+            <div className="flex items-center space-x-3">
+                         <Package className="h-6 w-6 text-blue-600" />
+                         <h1 className="text-xl font-bold text-slate-800">LocateWise</h1>
+                         <Image
+                           src="/techM.png"
+                           alt="TechMahindra Logo"
+                           width={60}
+                           height={40}
+                           className="h-6 w-auto object-contain"
+                           priority
+                         />
+                       </div>
           </div>
         </SidebarHeader>
 
         <SidebarContent className="bg-white/40 backdrop-blur-md h-[calc(100%-80px)] overflow-y-auto">
+         <div className="px-4 py-4 border-b">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab("overview")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  activeTab === "overview"
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-white/60 text-slate-700 hover:bg-white/80"
+                }`}
+              >
+                Overview
+              </button>
+              <button
+               onClick={() => {
+                  setActiveTab("kpi")
+                  router.push("/kpi") // Add this line
+                }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  activeTab === "kpi"
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-white/60 text-slate-700 hover:bg-white/80"
+                }`}
+              >
+                KPI Dashboard
+              </button>
+            </div>
+          </div>
           <SidebarGroup className="px-4 py-4">
             <SidebarGroupLabel className="text-slate-800 font-semibold text-sm mb-3">Region Filter</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -156,14 +194,15 @@ function DashboardContent() {
 
       <div className="flex-1 ml-[100px] xl:ml-[80px] min-w-0">
         <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-white/80 backdrop-blur-md px-6 shadow-sm sticky top-0 z-10">
-          <SidebarTrigger className="hover:bg-slate-100 transition-colors p-2 rounded-lg" />
+
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-slate-900">Dashboard Overview</h2>
+            <h1 className="text-xl font-bold text-slate-800">LocateWise</h1>
             <Badge variant="secondary" className="bg-green-100 text-green-800 font-medium">
               Live Data
             </Badge>
           </div>
         </header>
+       
 
         <div className="flex-1 p-6 space-y-6 max-w-[calc(100vw-280px)] xl:max-w-[calc(100vw-320px)]">
           {/* Top Two Horizontal Components - Side by Side */}
@@ -222,6 +261,7 @@ function DashboardContent() {
           </Card>
         </div>
       </div>
+      
     </div>
   )
 }
