@@ -18,7 +18,7 @@ interface ShipmentNode {
   lng: number
   status: "On-time" | "delayed" | "major-delay"
   location: string
-  shipmentIds: string[]
+  shipments: ShipmentDetail[]
   region: string
   transportMode: "Air" | "Ocean"
 }
@@ -29,7 +29,8 @@ interface ShipmentDetail {
   destination: string
   status: "On-time" | "delayed" | "major-delay"
   eta: string
-  transportMode : string 
+  transportMode: string
+  product?: string
 }
 
 const shipmentNodes: ShipmentNode[] = [
@@ -37,21 +38,33 @@ const shipmentNodes: ShipmentNode[] = [
     id: "1",
     lat: 40.7128,
     lng: -74.0060,
-    status: "On-time",
+    status: "delayed",
     location: "New York, USA",
-    shipmentIds: ["SH001", "SH002", "SH018", "SH001-D", "SH001-L", "SH001-B"],
     region: "north-america",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH001", start: "New York, USA", destination: "London, UK", status: "On-time", eta: "2023-06-15", transportMode: "Air", product: "Electronics"},
+      { id: "SH002", start: "New York, USA", destination: "Tokyo, Japan", status: "delayed", eta: "2023-06-18", transportMode: "Air", product: "Pharmaceuticals"},
+      { id: "SH101", start: "New York, USA", destination: "Paris, France", status: "On-time", eta: "2023-06-19", transportMode: "Air", product: "Textiles"},
+      { id: "SH102", start: "New York, USA", destination: "Berlin, Germany", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Machinery"},
+      { id: "SH018", start: "Shanghai, China", destination: "New York, USA", status: "On-time", eta: "2023-06-20", transportMode: "Ocean", product: "Automotive Parts"}
+    ]
   },
   {
     id: "2",
     lat: 34.0522,
     lng: -118.2437,
-    status: "delayed",
+    status: "major-delay",
     location: "Los Angeles, USA",
-    shipmentIds: ["SH003", "SH019", "SH002-D", "SH002-L", "SH002-B"],
     region: "north-america",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH003", start: "Los Angeles, USA", destination: "Sydney, Australia", status: "delayed", eta: "2023-06-22", transportMode: "Air", product: "Consumer Goods"},
+      { id: "SH104", start: "Los Angeles, USA", destination: "Munich, Germany", status: "On-time", eta: "2023-06-23", transportMode: "Air", product: "Pharma"},
+      { id: "SH019", start: "Hamburg, Germany", destination: "Los Angeles, USA", status: "major-delay", eta: "On Hold", transportMode: "Ocean", product: "Industrial Equipment"},
+      { id: "SH105", start: "Los Angeles, USA", destination: "Dubai, UAE", status: "On-time", eta: "2023-06-24", transportMode: "Air", product: "Clothing"},
+      { id: "SH106", start: "Los Angeles, USA", destination: "Singapore", status: "On-time", eta: "2023-07-01", transportMode: "Air", product: "Electronics"}
+    ]
   },
   {
     id: "3",
@@ -59,9 +72,15 @@ const shipmentNodes: ShipmentNode[] = [
     lng: -0.1278,
     status: "On-time",
     location: "London, UK",
-    shipmentIds: ["SH004", "SH005", "SH020", "SH003-D", "SH003-L", "SH003-B"],
     region: "europe",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH004", start: "London, UK", destination: "New York, USA", status: "On-time", eta: "2023-06-14", transportMode: "Air", product: "Financial Documents"},
+      { id: "SH005", start: "London, UK", destination: "Istanbul, Turkey", status: "delayed", eta: "2023-06-16", transportMode: "Air", product: "Textiles"},
+      { id: "SH103", start: "London, UK", destination: "Rome, Italy", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Medical Equipment"},
+      { id: "SH107", start: "London, UK", destination: "Cairo, Egypt", status: "On-time", eta: "2023-06-25", transportMode: "Ocean", product: "Agricultural Products"},
+      { id: "SH020", start: "São Paulo, Brazil", destination: "London, UK", status: "On-time", eta: "2023-06-25", transportMode: "Air", product: "Tech Components"}
+    ]
   },
   {
     id: "4",
@@ -69,69 +88,111 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 9.9937,
     status: "major-delay",
     location: "Hamburg, Germany",
-    shipmentIds: ["SH006", "SH021", "SH004-D", "SH004-L", "SH004-B"],
     region: "europe",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH006", start: "Hamburg, Germany", destination: "Los Angeles, USA", status: "major-delay", eta: "On Hold", transportMode: "Ocean", product: "Automotive Vehicles"},
+      { id: "SH021", start: "Mumbai, India", destination: "Hamburg, Germany", status: "delayed", eta: "2023-06-28", transportMode: "Ocean", product: "Textiles"},
+      { id: "SH108", start: "Hamburg, Germany", destination: "Amsterdam, NL", status: "On-time", eta: "2023-07-02", transportMode: "Air", product: "Food"},
+      { id: "SH109", start: "Hamburg, Germany", destination: "Vienna, Austria", status: "On-time", eta: "2023-07-05", transportMode: "Air", product: "Tech Goods"},
+      { id: "SH110", start: "Hamburg, Germany", destination: "London, UK", status: "delayed", eta: "2023-07-10", transportMode: "Air", product: "Pharma"}
+    ]
   },
   {
     id: "5",
     lat: 41.0082,
     lng: 28.9784,
-    status: "delayed",
+    status: "On-time",
     location: "Istanbul, Turkey",
-    shipmentIds: ["SH007", "SH008", "SH022", "SH005-D", "SH005-L", "SH005-B"],
     region: "europe",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH007", start: "Istanbul, Turkey", destination: "Mumbai, India", status: "On-time", eta: "2023-06-19", transportMode: "Air", product: "Electronics"},
+      { id: "SH008", start: "Istanbul, Turkey", destination: "Lagos, Nigeria", status: "delayed", eta: "2023-06-17", transportMode: "Air", product: "Construction Materials"},
+      { id: "SH022", start: "Tokyo, Japan", destination: "Istanbul, Turkey", status: "major-delay", eta: "2023-06-21", transportMode: "Air", product: "Electronics"},
+      { id: "SH111", start: "Istanbul, Turkey", destination: "Moscow, Russia", status: "On-time", eta: "2023-07-03", transportMode: "Air", product: "Food"},
+      { id: "SH112", start: "Istanbul, Turkey", destination: "Singapore", status: "delayed", eta: "2023-07-13", transportMode: "Ocean", product: "Machinery"}
+    ]
   },
   {
     id: "6",
     lat: 19.0760,
     lng: 72.8777,
-    status: "On-time",
+    status: "delayed",
     location: "Mumbai, India",
-    shipmentIds: ["SH009", "SH023", "SH006-D", "SH006-L", "SH006-B"],
     region: "asia",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH009", start: "Mumbai, India", destination: "Shanghai, China", status: "On-time", eta: "2023-06-16", transportMode: "Ocean", product: "Petroleum Products"},
+      { id: "SH023", start: "London, UK", destination: "Mumbai, India", status: "delayed", eta: "2023-06-18", transportMode: "Air", product: "Pharmaceuticals"},
+      { id: "SH113", start: "Mumbai, India", destination: "Paris, France", status: "On-time", eta: "2023-07-18", transportMode: "Air", product: "Textiles"},
+      { id: "SH114", start: "Mumbai, India", destination: "Tokyo, Japan", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Glassware"},
+      { id: "SH115", start: "Mumbai, India", destination: "Cape Town, SA", status: "On-time", eta: "2023-07-10", transportMode: "Air", product: "Fruit"}
+    ]
   },
   {
     id: "7",
     lat: 31.2304,
     lng: 121.4737,
-    status: "delayed",
+    status: "On-time",
     location: "Shanghai, China",
-    shipmentIds: ["SH010", "SH011", "SH024", "SH007-D", "SH007-L", "SH007-B"],
     region: "asia",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH010", start: "Shanghai, China", destination: "Tokyo, Japan", status: "On-time", eta: "2023-06-20", transportMode: "Ocean", product: "Electronics"},
+      { id: "SH011", start: "Shanghai, China", destination: "Sydney, Australia", status: "delayed", eta: "2023-06-22", transportMode: "Ocean", product: "Consumer Goods"},
+      { id: "SH024", start: "Los Angeles, USA", destination: "Shanghai, China", status: "On-time", eta: "2023-06-25", transportMode: "Ocean", product: "Agricultural Products"},
+      { id: "SH116", start: "Shanghai, China", destination: "Bangkok, Thailand", status: "On-time", eta: "2023-06-28", transportMode: "Air", product: "Textiles"},
+      { id: "SH117", start: "Shanghai, China", destination: "Mumbai, India", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Jewelry"}
+    ]
   },
   {
     id: "8",
     lat: 35.6762,
     lng: 139.6503,
-    status: "On-time",
+    status: "major-delay",
     location: "Tokyo, Japan",
-    shipmentIds: ["SH012", "SH025", "SH008-D", "SH008-L", "SH008-B"],
     region: "asia",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH012", start: "Tokyo, Japan", destination: "New York, USA", status: "On-time", eta: "2023-06-17", transportMode: "Air", product: "Automotive Parts"},
+      { id: "SH025", start: "Sydney, Australia", destination: "Tokyo, Japan", status: "delayed", eta: "2023-06-19", transportMode: "Ocean", product: "Agricultural Products"},
+      { id: "SH118", start: "Tokyo, Japan", destination: "Berlin, Germany", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Medical Devices"},
+      { id: "SH119", start: "Tokyo, Japan", destination: "Mumbai, India", status: "On-time", eta: "2023-07-12", transportMode: "Air", product: "Consumer Electronics"},
+      { id: "SH120", start: "Tokyo, Japan", destination: "Seoul, South Korea", status: "On-time", eta: "2023-07-14", transportMode: "Air", product: "Consumer Goods"}
+    ]
   },
   {
     id: "9",
     lat: 6.5244,
     lng: 3.3792,
-    status: "major-delay",
+    status: "On-time",
     location: "Lagos, Nigeria",
-    shipmentIds: ["SH013", "SH014", "SH026", "SH009-D", "SH009-L", "SH009-B"],
     region: "africa",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH013", start: "Lagos, Nigeria", destination: "London, UK", status: "delayed", eta: "On Hold", transportMode: "Ocean", product: "Petroleum Products"},
+      { id: "SH014", start: "Lagos, Nigeria", destination: "Hamburg, Germany", status: "On-time", eta: "2023-06-30", transportMode: "Ocean", product: "Agricultural Products"},
+      { id: "SH026", start: "São Paulo, Brazil", destination: "Lagos, Nigeria", status: "major-delay", eta: "2023-06-24", transportMode: "Ocean", product: "Construction Materials"},
+      { id: "SH121", start: "Lagos, Nigeria", destination: "Paris, France", status: "On-time", eta: "2023-07-20", transportMode: "Air", product: "Fruit"},
+      { id: "SH122", start: "Lagos, Nigeria", destination: "Nairobi, Kenya", status: "On-time", eta: "2023-08-01", transportMode: "Air", product: "Textiles"}
+    ]
   },
   {
     id: "10",
     lat: -23.5505,
     lng: -46.6333,
-    status: "On-time",
+    status: "major-delay",
     location: "São Paulo, Brazil",
-    shipmentIds: ["SH015", "SH027", "SH010-D", "SH010-L", "SH010-B"],
     region: "south-america",
-    transportMode: "Air"
+    transportMode: "Air",
+    shipments: [
+      { id: "SH015", start: "São Paulo, Brazil", destination: "Miami, USA", status: "On-time", eta: "2023-06-15", transportMode: "Air", product: "Agricultural Products"},
+      { id: "SH027", start: "Shanghai, China", destination: "São Paulo, Brazil", status: "On-time", eta: "2023-06-27", transportMode: "Ocean", product: "Electronics"},
+      { id: "SH123", start: "São Paulo, Brazil", destination: "Accra, Ghana", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Tech Goods"},
+      { id: "SH124", start: "São Paulo, Brazil", destination: "Dubai, UAE", status: "delayed", eta: "2023-07-30", transportMode: "Air", product: "Machinery"},
+      { id: "SH125", start: "São Paulo, Brazil", destination: "Bogota, Colombia", status: "On-time", eta: "2023-07-29", transportMode: "Air", product: "Textiles"}
+    ]
   },
   {
     id: "11",
@@ -139,88 +200,18 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 151.2093,
     status: "delayed",
     location: "Sydney, Australia",
-    shipmentIds: ["SH016", "SH017", "SH028", "SH011-D", "SH011-L", "SH011-B"],
     region: "oceania",
-    transportMode: "Air"
-  },
-]
+    transportMode: "Air",
+    shipments: [
+      { id: "SH016", start: "Sydney, Australia", destination: "Tokyo, Japan", status: "delayed", eta: "2023-06-21", transportMode: "Ocean", product: "Agricultural Products"},
+      { id: "SH017", start: "Sydney, Australia", destination: "Los Angeles, USA", status: "major-delay", eta: "2023-06-18", transportMode: "Air", product: "Pharmaceuticals"},
+      { id: "SH028", start: "London, UK", destination: "Sydney, Australia", status: "On-time", eta: "On Hold", transportMode: "Ocean", product: "Industrial Equipment"},
+      { id: "SH126", start: "Sydney, Australia", destination: "Singapore", status: "On-time", eta: "2023-07-10", transportMode: "Air", product: "Tech Goods"},
+      { id: "SH127", start: "Sydney, Australia", destination: "Auckland, NZ", status: "On-time", eta: "2023-07-12", transportMode: "Air", product: "Agricultural Products"}
+    ]
+  }
+];
 
-
-const generateShipmentDetails = (node: ShipmentNode): ShipmentDetail[] => {
-  const statuses: ("delivered" | "delayed" | "major-delay")[] = ["delivered", "delayed", "major-delay"]
-  const cities = [
-    "New York", "Los Angeles", "London", "Hamburg", "Istanbul", 
-    "Mumbai", "Shanghai", "Tokyo", "Lagos", "São Paulo", "Sydney"
-  ]
-  
-  return node.shipmentIds.map((id, index) => {
-    const otherCities = cities.filter(city => 
-      !node.location.toLowerCase().includes(city.toLowerCase())
-    )
-    const randomCity = otherCities[Math.floor(Math.random() * otherCities.length)]
-    
-    const useNodeAsStart = Math.random() > 0.5
-    const start = useNodeAsStart 
-      ? node.location 
-      : `${randomCity}, ${randomCity === "New York" || randomCity === "Los Angeles" ? "USA" : 
-         randomCity === "London" ? "UK" : 
-         randomCity === "Hamburg" ? "Germany" :
-         randomCity === "Istanbul" ? "Turkey" :
-         randomCity === "Mumbai" ? "India" :
-         randomCity === "Shanghai" || randomCity === "Tokyo" ? "China" :
-         randomCity === "Lagos" ? "Nigeria" :
-         randomCity === "São Paulo" ? "Brazil" : "Australia"}`
-    
-    const destination = useNodeAsStart
-  ? `${randomCity}, ${
-      randomCity === "New York" || randomCity === "Los Angeles"
-        ? "USA"
-        : randomCity === "London"
-        ? "UK"
-        : randomCity === "Hamburg"
-        ? "Germany"
-        : randomCity === "Istanbul"
-        ? "Turkey"
-        : randomCity === "Mumbai"
-        ? "India"
-        : randomCity === "Shanghai"
-        ? "China"
-        : randomCity === "Tokyo"
-        ? "Japan"
-        : randomCity === "Lagos"
-        ? "Nigeria"
-        : randomCity === "São Paulo"
-        ? "Brazil"
-        : "Australia"
-    }`
-  : node.location
-
-    
-    const useNodeStatus = Math.random() > 0.3
-    const status = useNodeStatus ? node.status : statuses[index % statuses.length]
-    
-    const days = Math.floor(Math.random() * 10) + 1
-    const etaDate = new Date()
-    etaDate.setDate(etaDate.getDate() + days)
-    
-    const eta = status === "delivered" 
-      ? "Delivered"
-      : status === "major-delay"
-      ? "On Hold"
-      : `${etaDate.toLocaleDateString()}`
-    
-    const transportMode = Math.random() < 0.8 ? "Air" : "Ocean"  
-
-    return {
-      id,
-      start,
-      destination,
-      status,
-      eta, 
-      transportMode
-    }
-  })
-}
 
 const routes = [
   { from: "1", to: "3" },
@@ -248,7 +239,7 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
 
   const getStatusColor = useCallback((status: string) => {
     switch (status) {
-      case "delivered": return "#22c55e"
+      case "On-time": return "#22c55e"
       case "delayed": return "#eab308"
       case "major-delay": return "#ef4444"
       default: return "#6b7280"
@@ -257,25 +248,33 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
 
   const getStatusLabel = useCallback((status: string) => {
     switch (status) {
-      case "delivered": return "On-time"
+      case "On-time": return "On-time"
       case "delayed": return "Delayed"
-      case "blocked": return "major-delay"
-      case "major-delay": return "major-delay"
+      case "major-delay": return "Major Delay"
       default: return "Unknown"
     }
   }, [])
 
   const filteredNodes = useCallback(() => {
     return shipmentNodes.filter((node) => {
+      // Filter by region
       if (selectedRegions.length > 0 && !selectedRegions.includes(node.region)) {
         return false
       }
-      if (shipmentId && !node.shipmentIds.some((id) => id.toLowerCase().includes(shipmentId.toLowerCase()))) {
+      
+      // Filter by shipment ID
+      if (shipmentId && !node.shipments.some(s => s.id.toLowerCase().includes(shipmentId.toLowerCase()))) {
         return false
       }
+      
+      // Filter by product
+      if (selectedProduct && !node.shipments.some(s => s.product?.toLowerCase().includes(selectedProduct.toLowerCase()))) {
+        return false
+      }
+      
       return true
     })
-  }, [selectedRegions, shipmentId])
+  }, [selectedRegions, selectedProduct, shipmentId])
 
   useEffect(() => {
     const loader = new Loader({
@@ -355,7 +354,7 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
         title: node.location,
       })
 
-      const shipmentDetails = generateShipmentDetails(node)
+      const shipmentDetails = node.shipments
       
       const statusCounts = shipmentDetails.reduce((acc, detail) => {
         acc[detail.status] = (acc[detail.status] || 0) + 1
@@ -363,126 +362,121 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
       }, {} as Record<string, number>)
       
       const pieData = [
-        { name: "On-Time", value: statusCounts.delivered || 0, color: "#22c55e" },
-        { name: "On-time", value: statusCounts.delivered || 0, color: "#22c55e" },
+        { name: "On-Time", value: statusCounts["On-time"] || 0, color: "#22c55e" },
         { name: "Delayed", value: statusCounts.delayed || 0, color: "#eab308" },
-        { name: "major-delay", value: statusCounts.blocked || 0, color: "#ef4444" },
-        { name: "Major Delay", value: statusCounts.blocked || 0, color: "#ef4444" },
+        { name: "Major Delay", value: statusCounts["major-delay"] || 0, color: "#ef4444" },
       ].filter(item => item.value > 0)
 
       const total = pieData.reduce((sum, item) => sum + item.value, 0)
       let cumulativePercent = 0
 
       const infoWindowContent = document.createElement("div")
-infoWindowContent.className = "min-w-[1000px]" // Increased width
-infoWindowContent.innerHTML = `
-  <div class="flex justify-between items-center mb-4">
-    <h3 class="font-bold text-xl">${node.location}</h3>
-    <div class="flex items-center gap-1">
-      <div class="w-3 h-3 rounded-full" style="background-color: ${getStatusColor(node.status)}"></div>
-      <span class="text-sm">${getStatusLabel(node.status)}</span>
-    </div>
-  </div>
-  <div class="flex gap-6">
-    <div class="w-1/3">
-      <h4 class="font-semibold text-sm mb-4 text-center">Shipment Status</h4>
-      <div class="h-64 flex flex-col items-center">
-        ${total > 0 ? (() => {
-          cumulativePercent = 0 // reset for pie slices
-          const pieSlices = pieData.map((entry) => {
-            const startPercent = cumulativePercent
-            cumulativePercent += entry.value / total
-            const endPercent = cumulativePercent
-            const startAngle = startPercent * 2 * Math.PI
-            const endAngle = endPercent * 2 * Math.PI
-            const largeArcFlag = endPercent - startPercent > 0.5 ? 1 : 0
-            const startX = 100 + Math.sin(startAngle) * 80
-            const startY = 100 - Math.cos(startAngle) * 80
-            const endX = 100 + Math.sin(endAngle) * 80
-            const endY = 100 - Math.cos(endAngle) * 80
-            const pathData = [
-              `M 100 100`,
-              `L ${startX} ${startY}`,
-              `A 80 80 0 ${largeArcFlag} 1 ${endX} ${endY}`,
-              `Z`
-            ].join(' ')
-            return `<path d="${pathData}" fill="${entry.color}" stroke="#fff" stroke-width="1"/>`
-          }).join('')
-
-          // Reset for label positions
-          cumulativePercent = 0
-          const labels = pieData.map((entry) => {
-            const midPercent = cumulativePercent + (entry.value / total) / 2
-            const angle = midPercent * 2 * Math.PI
-            const x = 100 + Math.sin(angle) * 50
-            const y = 100 - Math.cos(angle) * 50
-            cumulativePercent += entry.value / total
-            return `
-              <text 
-                x="${x}" 
-                y="${y}" 
-                text-anchor="middle" 
-                dominant-baseline="central"
-                fill="#333"
-                font-size="12"
-              >
-                ${entry.value}
-              </text>`
-          }).join('')
-
-          return `
-            <svg width="200" height="200" viewBox="0 0 200 200">
-              ${pieSlices}
-              ${labels}
-            </svg>
-            <div class="flex gap-4 mt-4">
-              ${pieData.map(entry => `
-                <div class="flex items-center gap-1">
-                  <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
-                  <span class="text-xs">${entry.name}</span>
-                </div>
-              `).join('')}
-            </div>`
-        })() : `
-          <div class="flex items-center justify-center h-full text-gray-400">
-            No shipment data available
+      infoWindowContent.className = "min-w-[1000px]"
+      infoWindowContent.innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-xl">${node.location}</h3>
+          <div class="flex items-center gap-1">
+            <div class="w-3 h-3 rounded-full" style="background-color: ${getStatusColor(node.status)}"></div>
+            <span class="text-sm">${getStatusLabel(node.status)}</span>
           </div>
-        `}
-      </div>
-    </div>
-    <div class="w-2/3">
-      <h4 class="font-semibold text-sm mb-2">Shipment Details</h4>
-      <div class="overflow-y-auto max-h-64">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50 sticky top-0">
-            <tr>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shipment ID</th>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Origin</th>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transport mode</th>
-              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ETA</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            ${shipmentDetails.map((detail, index) => `
-              <tr key="${detail.id}" class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
-                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">${detail.id}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.start}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.destination}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm" style="color: ${getStatusColor(detail.status)}">${getStatusLabel(detail.status)}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.transportMode}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.eta}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-`
+        </div>
+        <div class="flex gap-6">
+          <div class="w-1/3">
+            <h4 class="font-semibold text-sm mb-4 text-center">Shipment Status</h4>
+            <div class="h-64 flex flex-col items-center">
+              ${total > 0 ? (() => {
+                cumulativePercent = 0
+                const pieSlices = pieData.map((entry) => {
+                  const startPercent = cumulativePercent
+                  cumulativePercent += entry.value / total
+                  const endPercent = cumulativePercent
+                  const startAngle = startPercent * 2 * Math.PI
+                  const endAngle = endPercent * 2 * Math.PI
+                  const largeArcFlag = endPercent - startPercent > 0.5 ? 1 : 0
+                  const startX = 100 + Math.sin(startAngle) * 80
+                  const startY = 100 - Math.cos(startAngle) * 80
+                  const endX = 100 + Math.sin(endAngle) * 80
+                  const endY = 100 - Math.cos(endAngle) * 80
+                  const pathData = [
+                    `M 100 100`,
+                    `L ${startX} ${startY}`,
+                    `A 80 80 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+                    `Z`
+                  ].join(' ')
+                  return `<path d="${pathData}" fill="${entry.color}" stroke="#fff" stroke-width="1"/>`
+                }).join('')
 
+                cumulativePercent = 0
+                const labels = pieData.map((entry) => {
+                  const midPercent = cumulativePercent + (entry.value / total) / 2
+                  const angle = midPercent * 2 * Math.PI
+                  const x = 100 + Math.sin(angle) * 50
+                  const y = 100 - Math.cos(angle) * 50
+                  cumulativePercent += entry.value / total
+                  return `
+                    <text 
+                      x="${x}" 
+                      y="${y}" 
+                      text-anchor="middle" 
+                      dominant-baseline="central"
+                      fill="#333"
+                      font-size="12"
+                    >
+                      ${entry.value}
+                    </text>`
+                }).join('')
 
+                return `
+                  <svg width="200" height="200" viewBox="0 0 200 200">
+                    ${pieSlices}
+                    ${labels}
+                  </svg>
+                  <div class="flex gap-4 mt-4">
+                    ${pieData.map(entry => `
+                      <div class="flex items-center gap-1">
+                        <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
+                        <span class="text-xs">${entry.name}</span>
+                      </div>
+                    `).join('')}
+                  </div>`
+              })() : `
+                <div class="flex items-center justify-center h-full text-gray-400">
+                  No shipment data available
+                </div>
+              `}
+            </div>
+          </div>
+          <div class="w-2/3">
+            <h4 class="font-semibold text-sm mb-2">Shipment Details</h4>
+            <div class="overflow-y-auto max-h-64">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shipment ID</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Origin</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transport</th>
+                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ETA</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  ${shipmentDetails.map((detail, index) => `
+                    <tr key="${detail.id}" class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                      <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">${detail.id}</td>
+                      <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.start}</td>
+                      <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.destination}</td>
+                      <td class="px-4 py-2 whitespace-nowrap text-sm" style="color: ${getStatusColor(detail.status)}">${getStatusLabel(detail.status)}</td>
+                      <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.transportMode}</td>
+                      <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.eta}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `
 
       const infoWindow = new google.maps.InfoWindow({
         content: infoWindowContent,
@@ -590,7 +584,7 @@ infoWindowContent.innerHTML = `
           <div className="space-y-3">
             <div className="flex items-center gap-4 text-sm">
               <div className="w-5 h-5 rounded-full bg-green-500 border-2 border-white shadow-lg"></div>
-              <span className="font-medium text-slate-700">In-time</span>
+              <span className="font-medium text-slate-700">On-time</span>
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="w-5 h-5 rounded-full bg-yellow-500 border-2 border-white shadow-lg"></div>
