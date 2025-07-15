@@ -36,7 +36,7 @@ const regions = [
 ]
 
 const products = [
-  { value: "Sea", label: "Sea" },
+  { value: "Ocean", label: "Ocean" },
   { value: "Air", label: "Air" },
   { value: "Road", label: "Road" },
   { value: "Rail", label: "Rail" },
@@ -45,7 +45,7 @@ const products = [
 
 function DashboardContent() {
   const [selectedRegions, setSelectedRegions] = useState<string[]>(["asia", "europe"])
-  const [selectedProduct, setSelectedProduct] = useState<string>("")
+  const [selectedProduct, setSelectedProduct] = useState<string>("Air")
   const [shipmentId, setShipmentId] = useState<string>("")
   const { state } = useSidebar()
    const [activeTab, setActiveTab] = useState<"overview" | "kpi">("overview")
