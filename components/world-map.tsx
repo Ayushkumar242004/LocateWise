@@ -20,6 +20,7 @@ interface ShipmentNode {
   location: string
   shipmentIds: string[]
   region: string
+  transportMode: "Air" | "Ocean"
 }
 
 interface ShipmentDetail {
@@ -28,6 +29,7 @@ interface ShipmentDetail {
   destination: string
   status: "delivered" | "delayed" | "blocked"
   eta: string
+  transportMode : string 
 }
 
 const shipmentNodes: ShipmentNode[] = [
@@ -39,6 +41,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "New York, USA",
     shipmentIds: ["SH001", "SH002", "SH018", "SH001-D", "SH001-L", "SH001-B"],
     region: "north-america",
+    transportMode: "Air"
   },
   {
     id: "2",
@@ -48,6 +51,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "Los Angeles, USA",
     shipmentIds: ["SH003", "SH019", "SH002-D", "SH002-L", "SH002-B"],
     region: "north-america",
+    transportMode: "Air"
   },
   {
     id: "3",
@@ -57,6 +61,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "London, UK",
     shipmentIds: ["SH004", "SH005", "SH020", "SH003-D", "SH003-L", "SH003-B"],
     region: "europe",
+    transportMode: "Air"
   },
   {
     id: "4",
@@ -66,6 +71,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "Hamburg, Germany",
     shipmentIds: ["SH006", "SH021", "SH004-D", "SH004-L", "SH004-B"],
     region: "europe",
+    transportMode: "Air"
   },
   {
     id: "5",
@@ -75,6 +81,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "Istanbul, Turkey",
     shipmentIds: ["SH007", "SH008", "SH022", "SH005-D", "SH005-L", "SH005-B"],
     region: "europe",
+    transportMode: "Air"
   },
   {
     id: "6",
@@ -84,6 +91,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "Mumbai, India",
     shipmentIds: ["SH009", "SH023", "SH006-D", "SH006-L", "SH006-B"],
     region: "asia",
+    transportMode: "Air"
   },
   {
     id: "7",
@@ -93,6 +101,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "Shanghai, China",
     shipmentIds: ["SH010", "SH011", "SH024", "SH007-D", "SH007-L", "SH007-B"],
     region: "asia",
+    transportMode: "Air"
   },
   {
     id: "8",
@@ -102,6 +111,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "Tokyo, Japan",
     shipmentIds: ["SH012", "SH025", "SH008-D", "SH008-L", "SH008-B"],
     region: "asia",
+    transportMode: "Air"
   },
   {
     id: "9",
@@ -111,6 +121,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "Lagos, Nigeria",
     shipmentIds: ["SH013", "SH014", "SH026", "SH009-D", "SH009-L", "SH009-B"],
     region: "africa",
+    transportMode: "Air"
   },
   {
     id: "10",
@@ -120,6 +131,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "São Paulo, Brazil",
     shipmentIds: ["SH015", "SH027", "SH010-D", "SH010-L", "SH010-B"],
     region: "south-america",
+    transportMode: "Air"
   },
   {
     id: "11",
@@ -129,6 +141,7 @@ const shipmentNodes: ShipmentNode[] = [
     location: "Sydney, Australia",
     shipmentIds: ["SH016", "SH017", "SH028", "SH011-D", "SH011-L", "SH011-B"],
     region: "oceania",
+    transportMode: "Air"
   },
 ]
 
@@ -196,12 +209,15 @@ const generateShipmentDetails = (node: ShipmentNode): ShipmentDetail[] => {
       ? "On Hold"
       : `${etaDate.toLocaleDateString()}`
     
+    const transportMode = Math.random() < 0.8 ? "Air" : "Ocean"  
+
     return {
       id,
       start,
       destination,
       status,
-      eta
+      eta, 
+      transportMode
     }
   })
 }
@@ -241,9 +257,9 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
 
   const getStatusLabel = useCallback((status: string) => {
     switch (status) {
-      case "delivered": return "Delivered"
+      case "delivered": return "On-time"
       case "delayed": return "Delayed"
-      case "blocked": return "Blocked"
+      case "blocked": return "major-delay"
       default: return "Unknown"
     }
   }, [])
@@ -346,16 +362,16 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
       }, {} as Record<string, number>)
       
       const pieData = [
-        { name: "Delivered", value: statusCounts.delivered || 0, color: "#22c55e" },
+        { name: "On-Time", value: statusCounts.delivered || 0, color: "#22c55e" },
         { name: "Delayed", value: statusCounts.delayed || 0, color: "#eab308" },
-        { name: "Blocked", value: statusCounts.blocked || 0, color: "#ef4444" },
+        { name: "major-delay", value: statusCounts.blocked || 0, color: "#ef4444" },
       ].filter(item => item.value > 0)
 
       const total = pieData.reduce((sum, item) => sum + item.value, 0)
       let cumulativePercent = 0
 
       const infoWindowContent = document.createElement("div")
-infoWindowContent.className = "min-w-[1500px]" // Increased width
+infoWindowContent.className = "min-w-[1000px]" // Increased width
 infoWindowContent.innerHTML = `
   <div class="flex justify-between items-center mb-4">
     <h3 class="font-bold text-xl">${node.location}</h3>
@@ -441,6 +457,7 @@ infoWindowContent.innerHTML = `
               <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start</th>
               <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
               <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transport mode</th>
               <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ETA</th>
             </tr>
           </thead>
@@ -451,6 +468,7 @@ infoWindowContent.innerHTML = `
                 <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.start}</td>
                 <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.destination}</td>
                 <td class="px-4 py-2 whitespace-nowrap text-sm" style="color: ${getStatusColor(detail.status)}">${getStatusLabel(detail.status)}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.transportMode}</td>
                 <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.eta}</td>
               </tr>
             `).join('')}
