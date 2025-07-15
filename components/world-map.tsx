@@ -3,12 +3,15 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Loader } from "@googlemaps/js-api-loader"
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
+
 interface WorldMapProps {
   selectedRegions: string[]
   selectedProduct: string
   shipmentId: string
   onRemoveRegion: (region: string) => void
 }
+
 interface ShipmentNode {
   id: string
   lat: number
@@ -19,6 +22,14 @@ interface ShipmentNode {
   region: string
 }
 
+interface ShipmentDetail {
+  id: string
+  start: string
+  destination: string
+  status: "delivered" | "delayed" | "blocked"
+  eta: string
+}
+
 const shipmentNodes: ShipmentNode[] = [
   {
     id: "1",
@@ -26,7 +37,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: -74.0060,
     status: "delivered",
     location: "New York, USA",
-    shipmentIds: ["SH001", "SH002"],
+    shipmentIds: ["SH001", "SH002", "SH018", "SH001-D", "SH001-L", "SH001-B"],
     region: "north-america",
   },
   {
@@ -35,7 +46,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: -118.2437,
     status: "delayed",
     location: "Los Angeles, USA",
-    shipmentIds: ["SH003"],
+    shipmentIds: ["SH003", "SH019", "SH002-D", "SH002-L", "SH002-B"],
     region: "north-america",
   },
   {
@@ -44,7 +55,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: -0.1278,
     status: "delivered",
     location: "London, UK",
-    shipmentIds: ["SH004", "SH005"],
+    shipmentIds: ["SH004", "SH005", "SH020", "SH003-D", "SH003-L", "SH003-B"],
     region: "europe",
   },
   {
@@ -53,7 +64,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 9.9937,
     status: "blocked",
     location: "Hamburg, Germany",
-    shipmentIds: ["SH006"],
+    shipmentIds: ["SH006", "SH021", "SH004-D", "SH004-L", "SH004-B"],
     region: "europe",
   },
   {
@@ -62,7 +73,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 28.9784,
     status: "delayed",
     location: "Istanbul, Turkey",
-    shipmentIds: ["SH007", "SH008"],
+    shipmentIds: ["SH007", "SH008", "SH022", "SH005-D", "SH005-L", "SH005-B"],
     region: "europe",
   },
   {
@@ -71,7 +82,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 72.8777,
     status: "delivered",
     location: "Mumbai, India",
-    shipmentIds: ["SH009"],
+    shipmentIds: ["SH009", "SH023", "SH006-D", "SH006-L", "SH006-B"],
     region: "asia",
   },
   {
@@ -80,7 +91,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 121.4737,
     status: "delayed",
     location: "Shanghai, China",
-    shipmentIds: ["SH010", "SH011"],
+    shipmentIds: ["SH010", "SH011", "SH024", "SH007-D", "SH007-L", "SH007-B"],
     region: "asia",
   },
   {
@@ -89,7 +100,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 139.6503,
     status: "delivered",
     location: "Tokyo, Japan",
-    shipmentIds: ["SH012"],
+    shipmentIds: ["SH012", "SH025", "SH008-D", "SH008-L", "SH008-B"],
     region: "asia",
   },
   {
@@ -98,7 +109,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 3.3792,
     status: "blocked",
     location: "Lagos, Nigeria",
-    shipmentIds: ["SH013", "SH014"],
+    shipmentIds: ["SH013", "SH014", "SH026", "SH009-D", "SH009-L", "SH009-B"],
     region: "africa",
   },
   {
@@ -107,7 +118,7 @@ const shipmentNodes: ShipmentNode[] = [
     lng: -46.6333,
     status: "delivered",
     location: "São Paulo, Brazil",
-    shipmentIds: ["SH015"],
+    shipmentIds: ["SH015", "SH027", "SH010-D", "SH010-L", "SH010-B"],
     region: "south-america",
   },
   {
@@ -116,35 +127,108 @@ const shipmentNodes: ShipmentNode[] = [
     lng: 151.2093,
     status: "delayed",
     location: "Sydney, Australia",
-    shipmentIds: ["SH016", "SH017"],
+    shipmentIds: ["SH016", "SH017", "SH028", "SH011-D", "SH011-L", "SH011-B"],
     region: "oceania",
   },
 ]
 
+
+const generateShipmentDetails = (node: ShipmentNode): ShipmentDetail[] => {
+  const statuses: ("delivered" | "delayed" | "blocked")[] = ["delivered", "delayed", "blocked"]
+  const cities = [
+    "New York", "Los Angeles", "London", "Hamburg", "Istanbul", 
+    "Mumbai", "Shanghai", "Tokyo", "Lagos", "São Paulo", "Sydney"
+  ]
+  
+  return node.shipmentIds.map((id, index) => {
+    const otherCities = cities.filter(city => 
+      !node.location.toLowerCase().includes(city.toLowerCase())
+    )
+    const randomCity = otherCities[Math.floor(Math.random() * otherCities.length)]
+    
+    const useNodeAsStart = Math.random() > 0.5
+    const start = useNodeAsStart 
+      ? node.location 
+      : `${randomCity}, ${randomCity === "New York" || randomCity === "Los Angeles" ? "USA" : 
+         randomCity === "London" ? "UK" : 
+         randomCity === "Hamburg" ? "Germany" :
+         randomCity === "Istanbul" ? "Turkey" :
+         randomCity === "Mumbai" ? "India" :
+         randomCity === "Shanghai" || randomCity === "Tokyo" ? "China" :
+         randomCity === "Lagos" ? "Nigeria" :
+         randomCity === "São Paulo" ? "Brazil" : "Australia"}`
+    
+    const destination = useNodeAsStart
+  ? `${randomCity}, ${
+      randomCity === "New York" || randomCity === "Los Angeles"
+        ? "USA"
+        : randomCity === "London"
+        ? "UK"
+        : randomCity === "Hamburg"
+        ? "Germany"
+        : randomCity === "Istanbul"
+        ? "Turkey"
+        : randomCity === "Mumbai"
+        ? "India"
+        : randomCity === "Shanghai"
+        ? "China"
+        : randomCity === "Tokyo"
+        ? "Japan"
+        : randomCity === "Lagos"
+        ? "Nigeria"
+        : randomCity === "São Paulo"
+        ? "Brazil"
+        : "Australia"
+    }`
+  : node.location
+
+    
+    const useNodeStatus = Math.random() > 0.3
+    const status = useNodeStatus ? node.status : statuses[index % statuses.length]
+    
+    const days = Math.floor(Math.random() * 10) + 1
+    const etaDate = new Date()
+    etaDate.setDate(etaDate.getDate() + days)
+    
+    const eta = status === "delivered" 
+      ? "Delivered"
+      : status === "blocked"
+      ? "On Hold"
+      : `${etaDate.toLocaleDateString()}`
+    
+    return {
+      id,
+      start,
+      destination,
+      status,
+      eta
+    }
+  })
+}
+
 const routes = [
-  { from: "1", to: "3" }, // NY to London
-  { from: "2", to: "4" }, // LA to Hamburg
-  { from: "3", to: "5" }, // London to Istanbul
-  { from: "4", to: "6" }, // Hamburg to Mumbai
-  { from: "5", to: "6" }, // Istanbul to Mumbai
-  { from: "6", to: "7" }, // Mumbai to Shanghai
-  { from: "7", to: "8" }, // Shanghai to Tokyo
-  { from: "3", to: "9" }, // London to Lagos
-  { from: "1", to: "10" }, // NY to São Paulo
-  { from: "7", to: "11" }, // Shanghai to Sydney
+  { from: "1", to: "3" },
+  { from: "2", to: "4" },
+  { from: "3", to: "5" },
+  { from: "4", to: "6" },
+  { from: "5", to: "6" },
+  { from: "6", to: "7" },
+  { from: "7", to: "8" },
+  { from: "3", to: "9" },
+  { from: "1", to: "10" },
+  { from: "7", to: "11" },
 ]
 
-export function WorldMap({ selectedRegions, selectedProduct, shipmentId,onRemoveRegion }: WorldMapProps) {
+export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemoveRegion }: WorldMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
   const polylinesRef = useRef<google.maps.Polyline[]>([])
   const infoWindowsRef = useRef<google.maps.InfoWindow[]>([])
   const [activeNodesCount, setActiveNodesCount] = useState(0)
-const [showFilters, setShowFilters] = useState(true) // <-- Add this line
-const [showLegend, setShowLegend] = useState(true)
+  const [showFilters, setShowFilters] = useState(true)
+  const [showLegend, setShowLegend] = useState(true)
   const [showStats, setShowStats] = useState(true)
-
 
   const getStatusColor = useCallback((status: string) => {
     switch (status) {
@@ -204,8 +288,8 @@ const [showLegend, setShowLegend] = useState(true)
           ],
           disableDefaultUI: false,
           zoomControl: true,
-          scrollwheel: false, // Disable scroll zoom for slower zooming
-          gestureHandling: "cooperative", // Makes zooming less sensitive
+          scrollwheel: false,
+          gestureHandling: "cooperative",
         })
 
         mapInstance.current = newMap
@@ -222,15 +306,12 @@ const [showLegend, setShowLegend] = useState(true)
   }, [])
 
   const clearMapElements = useCallback(() => {
-    // Clear all existing markers
     markersRef.current.forEach(marker => marker.setMap(null))
     markersRef.current = []
     
-    // Clear all existing polylines
     polylinesRef.current.forEach(line => line.setMap(null))
     polylinesRef.current = []
     
-    // Close all info windows
     infoWindowsRef.current.forEach(window => window.close())
     infoWindowsRef.current = []
   }, [])
@@ -240,59 +321,164 @@ const [showLegend, setShowLegend] = useState(true)
 
     clearMapElements()
     const currentNodes = filteredNodes()
-    setActiveNodesCount(32)
+    setActiveNodesCount(currentNodes.length)
 
-    // Create markers for filtered nodes
     currentNodes.forEach((node) => {
       const marker = new google.maps.Marker({
         position: { lat: node.lat, lng: node.lng },
         map: mapInstance.current,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
-          fillColor: getStatusColor(node.status),
+          fillColor: "#ffffff",
           fillOpacity: 1,
-          strokeColor: "#ffffff",
+          strokeColor: getStatusColor(node.status),
           strokeWeight: 2,
           scale: 8,
         },
         title: node.location,
       })
 
-      // Create info window for each marker
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <div class="p-2 min-w-[200px]">
-            <div class="flex items-center gap-2 mb-2">
-              <div class="w-4 h-4 rounded-full" style="background-color: ${getStatusColor(node.status)}"></div>
-              <h3 class="font-bold text-lg">${node.location}</h3>
-            </div>
-            <div class="text-sm mb-2">
-              <span class="font-semibold">Status:</span> ${getStatusLabel(node.status)}
-            </div>
-            <div class="text-sm">
-              <p class="font-semibold">Shipments (${node.shipmentIds.length}):</p>
-              <div class="flex flex-wrap gap-1 mt-1">
-                ${node.shipmentIds.map(id => `<span class="text-xs px-2 py-1 bg-blue-100 rounded-full">${id}</span>`).join('')}
-              </div>
-            </div>
+      const shipmentDetails = generateShipmentDetails(node)
+      
+      const statusCounts = shipmentDetails.reduce((acc, detail) => {
+        acc[detail.status] = (acc[detail.status] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+      
+      const pieData = [
+        { name: "Delivered", value: statusCounts.delivered || 0, color: "#22c55e" },
+        { name: "Delayed", value: statusCounts.delayed || 0, color: "#eab308" },
+        { name: "Blocked", value: statusCounts.blocked || 0, color: "#ef4444" },
+      ].filter(item => item.value > 0)
+
+      const total = pieData.reduce((sum, item) => sum + item.value, 0)
+      let cumulativePercent = 0
+
+      const infoWindowContent = document.createElement("div")
+infoWindowContent.className = "min-w-[1500px]" // Increased width
+infoWindowContent.innerHTML = `
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="font-bold text-xl">${node.location}</h3>
+    <div class="flex items-center gap-1">
+      <div class="w-3 h-3 rounded-full" style="background-color: ${getStatusColor(node.status)}"></div>
+      <span class="text-sm">${getStatusLabel(node.status)}</span>
+    </div>
+  </div>
+  <div class="flex gap-6">
+    <div class="w-1/3">
+      <h4 class="font-semibold text-sm mb-4 text-center">Shipment Status</h4>
+      <div class="h-64 flex flex-col items-center">
+        ${total > 0 ? (() => {
+          cumulativePercent = 0 // reset for pie slices
+          const pieSlices = pieData.map((entry) => {
+            const startPercent = cumulativePercent
+            cumulativePercent += entry.value / total
+            const endPercent = cumulativePercent
+            const startAngle = startPercent * 2 * Math.PI
+            const endAngle = endPercent * 2 * Math.PI
+            const largeArcFlag = endPercent - startPercent > 0.5 ? 1 : 0
+            const startX = 100 + Math.sin(startAngle) * 80
+            const startY = 100 - Math.cos(startAngle) * 80
+            const endX = 100 + Math.sin(endAngle) * 80
+            const endY = 100 - Math.cos(endAngle) * 80
+            const pathData = [
+              `M 100 100`,
+              `L ${startX} ${startY}`,
+              `A 80 80 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+              `Z`
+            ].join(' ')
+            return `<path d="${pathData}" fill="${entry.color}" stroke="#fff" stroke-width="1"/>`
+          }).join('')
+
+          // Reset for label positions
+          cumulativePercent = 0
+          const labels = pieData.map((entry) => {
+            const midPercent = cumulativePercent + (entry.value / total) / 2
+            const angle = midPercent * 2 * Math.PI
+            const x = 100 + Math.sin(angle) * 50
+            const y = 100 - Math.cos(angle) * 50
+            cumulativePercent += entry.value / total
+            return `
+              <text 
+                x="${x}" 
+                y="${y}" 
+                text-anchor="middle" 
+                dominant-baseline="central"
+                fill="#333"
+                font-size="12"
+              >
+                ${entry.value}
+              </text>`
+          }).join('')
+
+          return `
+            <svg width="200" height="200" viewBox="0 0 200 200">
+              ${pieSlices}
+              ${labels}
+            </svg>
+            <div class="flex gap-4 mt-4">
+              ${pieData.map(entry => `
+                <div class="flex items-center gap-1">
+                  <div class="w-3 h-3 rounded-full" style="background-color: ${entry.color}"></div>
+                  <span class="text-xs">${entry.name}</span>
+                </div>
+              `).join('')}
+            </div>`
+        })() : `
+          <div class="flex items-center justify-center h-full text-gray-400">
+            No shipment data available
           </div>
-        `,
+        `}
+      </div>
+    </div>
+    <div class="w-2/3">
+      <h4 class="font-semibold text-sm mb-2">Shipment Details</h4>
+      <div class="overflow-y-auto max-h-64">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50 sticky top-0">
+            <tr>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ETA</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            ${shipmentDetails.map((detail, index) => `
+              <tr key="${detail.id}" class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">${detail.id}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.start}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.destination}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm" style="color: ${getStatusColor(detail.status)}">${getStatusLabel(detail.status)}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">${detail.eta}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+`
+
+
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: infoWindowContent,
+        maxWidth: 650,
       })
 
-      // Add click listener to show info window
       marker.addListener("click", () => {
-        // Close all other info windows first
         infoWindowsRef.current.forEach(window => window.close())
         infoWindow.open(mapInstance.current, marker)
       })
 
-      // Add hover effects
       marker.addListener("mouseover", () => {
         marker.setIcon({
           path: google.maps.SymbolPath.CIRCLE,
-          fillColor: getStatusColor(node.status),
+          fillColor: "#ffffff",
           fillOpacity: 1,
-          strokeColor: "#ffffff",
+          strokeColor: getStatusColor(node.status),
           strokeWeight: 3,
           scale: 10,
         })
@@ -301,9 +487,9 @@ const [showLegend, setShowLegend] = useState(true)
       marker.addListener("mouseout", () => {
         marker.setIcon({
           path: google.maps.SymbolPath.CIRCLE,
-          fillColor: getStatusColor(node.status),
+          fillColor: "#ffffff",
           fillOpacity: 1,
-          strokeColor: "#ffffff",
+          strokeColor: getStatusColor(node.status),
           strokeWeight: 2,
           scale: 8,
         })
@@ -313,7 +499,6 @@ const [showLegend, setShowLegend] = useState(true)
       infoWindowsRef.current.push(infoWindow)
     })
 
-    // Create dashed routes between nodes
     routes.forEach((route) => {
       const fromNode = currentNodes.find(n => n.id === route.from)
       const toNode = currentNodes.find(n => n.id === route.to)
@@ -336,30 +521,25 @@ const [showLegend, setShowLegend] = useState(true)
       }
     })
 
-    // Fit map to bounds of all markers
     if (currentNodes.length > 0) {
       const bounds = new google.maps.LatLngBounds()
       currentNodes.forEach(node => {
         bounds.extend(new google.maps.LatLng(node.lat, node.lng))
       })
       
-      // Add padding to the bounds
       mapInstance.current.fitBounds(bounds, {
         top: 50, right: 50, bottom: 50, left: 50
       })
       
-      // Don't zoom in too much if only one point
       if (currentNodes.length === 1) {
         mapInstance.current.setZoom(5)
       }
     } else {
-      // Default view if no nodes
       mapInstance.current.setCenter({ lat: 20, lng: 0 })
       mapInstance.current.setZoom(2)
     }
   }, [filteredNodes, getStatusColor, getStatusLabel, clearMapElements])
 
-  // Update markers and routes when filters change
   useEffect(() => {
     updateMapMarkersAndRoutes()
   }, [selectedRegions, selectedProduct, shipmentId, updateMapMarkersAndRoutes])
@@ -369,10 +549,8 @@ const [showLegend, setShowLegend] = useState(true)
       className="relative rounded-xl overflow-hidden border-2 border-white/50 shadow-inner"
       style={{ width: "1000px", height: "600px", minWidth: "1000px", minHeight: "600px", maxWidth: "1000px", maxHeight: "600px" }}
     >
-      {/* Google Maps Container */}
       <div ref={mapRef} className="w-full h-full" />
 
-      {/* Enhanced Legend */}
       {showLegend && (
         <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-md rounded-xl p-5 shadow-2xl border-2 border-white/50 z-10">
           <div className="flex justify-between items-center mb-4">
@@ -405,7 +583,6 @@ const [showLegend, setShowLegend] = useState(true)
         </div>
       )}
 
-      {/* Active Filters Display */}
       {showFilters && (selectedRegions.length > 0 || selectedProduct || shipmentId) && (
         <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-md rounded-xl p-5 shadow-2xl border-2 border-white/50 max-w-sm z-10">
           <div className="flex justify-between items-center mb-4">
@@ -458,11 +635,10 @@ const [showLegend, setShowLegend] = useState(true)
         </div>
       )}
 
-      {/* Live Stats Overlay */}
       {showStats && (
         <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-2xl border-2 border-white/50 z-10">
           <div className="flex justify-between items-center mb-2">
-            <p className="text-sm font-medium text-slate-600">Active Routes</p>
+            <p className="text-sm font-medium text-slate-600">Active Nodes</p>
             <button
               onClick={() => setShowStats(false)}
               className="text-slate-400 hover:text-slate-700 transition-colors text-xl"
@@ -481,6 +657,5 @@ const [showLegend, setShowLegend] = useState(true)
         </div>
       )}
     </div>
-
   )
 }
