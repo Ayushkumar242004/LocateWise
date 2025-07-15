@@ -7,7 +7,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 
 interface WorldMapProps {
   selectedRegions: string[]
-  selectedProduct: string
+  selectedTransport: string // Changed from selectedProduct
   shipmentId: string
   onRemoveRegion: (region: string) => void
 }
@@ -47,7 +47,7 @@ const shipmentNodes: ShipmentNode[] = [
       { id: "SH002", start: "New York, USA", destination: "Tokyo, Japan", status: "delayed", eta: "2023-06-18", transportMode: "Air", product: "Pharmaceuticals"},
       { id: "SH101", start: "New York, USA", destination: "Paris, France", status: "On-time", eta: "2023-06-19", transportMode: "Air", product: "Textiles"},
       { id: "SH102", start: "New York, USA", destination: "Berlin, Germany", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Machinery"},
-      { id: "SH018", start: "Shanghai, China", destination: "New York, USA", status: "On-time", eta: "2023-06-20", transportMode: "Ocean", product: "Automotive Parts"}
+      { id: "SH018", start: "Shanghai, China", destination: "New York, USA", status: "On-time", eta: "2023-06-20", transportMode: "Air", product: "Automotive Parts"}
     ]
   },
   {
@@ -61,7 +61,7 @@ const shipmentNodes: ShipmentNode[] = [
     shipments: [
       { id: "SH003", start: "Los Angeles, USA", destination: "Sydney, Australia", status: "delayed", eta: "2023-06-22", transportMode: "Air", product: "Consumer Goods"},
       { id: "SH104", start: "Los Angeles, USA", destination: "Munich, Germany", status: "On-time", eta: "2023-06-23", transportMode: "Air", product: "Pharma"},
-      { id: "SH019", start: "Hamburg, Germany", destination: "Los Angeles, USA", status: "major-delay", eta: "On Hold", transportMode: "Ocean", product: "Industrial Equipment"},
+      { id: "SH019", start: "Hamburg, Germany", destination: "Los Angeles, USA", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Industrial Equipment"},
       { id: "SH105", start: "Los Angeles, USA", destination: "Dubai, UAE", status: "On-time", eta: "2023-06-24", transportMode: "Air", product: "Clothing"},
       { id: "SH106", start: "Los Angeles, USA", destination: "Singapore", status: "On-time", eta: "2023-07-01", transportMode: "Air", product: "Electronics"}
     ]
@@ -78,7 +78,7 @@ const shipmentNodes: ShipmentNode[] = [
       { id: "SH004", start: "London, UK", destination: "New York, USA", status: "On-time", eta: "2023-06-14", transportMode: "Air", product: "Financial Documents"},
       { id: "SH005", start: "London, UK", destination: "Istanbul, Turkey", status: "delayed", eta: "2023-06-16", transportMode: "Air", product: "Textiles"},
       { id: "SH103", start: "London, UK", destination: "Rome, Italy", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Medical Equipment"},
-      { id: "SH107", start: "London, UK", destination: "Cairo, Egypt", status: "On-time", eta: "2023-06-25", transportMode: "Ocean", product: "Agricultural Products"},
+      { id: "SH107", start: "London, UK", destination: "Cairo, Egypt", status: "On-time", eta: "2023-06-25", transportMode: "Air", product: "Agricultural Products"},
       { id: "SH020", start: "São Paulo, Brazil", destination: "London, UK", status: "On-time", eta: "2023-06-25", transportMode: "Air", product: "Tech Components"}
     ]
   },
@@ -91,8 +91,8 @@ const shipmentNodes: ShipmentNode[] = [
     region: "europe",
     transportMode: "Air",
     shipments: [
-      { id: "SH006", start: "Hamburg, Germany", destination: "Los Angeles, USA", status: "major-delay", eta: "On Hold", transportMode: "Ocean", product: "Automotive Vehicles"},
-      { id: "SH021", start: "Mumbai, India", destination: "Hamburg, Germany", status: "delayed", eta: "2023-06-28", transportMode: "Ocean", product: "Textiles"},
+      { id: "SH006", start: "Hamburg, Germany", destination: "Los Angeles, USA", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Automotive Vehicles"},
+      { id: "SH021", start: "Mumbai, India", destination: "Hamburg, Germany", status: "delayed", eta: "2023-06-28", transportMode: "Air", product: "Textiles"},
       { id: "SH108", start: "Hamburg, Germany", destination: "Amsterdam, NL", status: "On-time", eta: "2023-07-02", transportMode: "Air", product: "Food"},
       { id: "SH109", start: "Hamburg, Germany", destination: "Vienna, Austria", status: "On-time", eta: "2023-07-05", transportMode: "Air", product: "Tech Goods"},
       { id: "SH110", start: "Hamburg, Germany", destination: "London, UK", status: "delayed", eta: "2023-07-10", transportMode: "Air", product: "Pharma"}
@@ -111,7 +111,7 @@ const shipmentNodes: ShipmentNode[] = [
       { id: "SH008", start: "Istanbul, Turkey", destination: "Lagos, Nigeria", status: "delayed", eta: "2023-06-17", transportMode: "Air", product: "Construction Materials"},
       { id: "SH022", start: "Tokyo, Japan", destination: "Istanbul, Turkey", status: "major-delay", eta: "2023-06-21", transportMode: "Air", product: "Electronics"},
       { id: "SH111", start: "Istanbul, Turkey", destination: "Moscow, Russia", status: "On-time", eta: "2023-07-03", transportMode: "Air", product: "Food"},
-      { id: "SH112", start: "Istanbul, Turkey", destination: "Singapore", status: "delayed", eta: "2023-07-13", transportMode: "Ocean", product: "Machinery"}
+      { id: "SH112", start: "Istanbul, Turkey", destination: "Singapore", status: "delayed", eta: "2023-07-13", transportMode: "Air", product: "Machinery"}
     ]
   },
   {
@@ -123,7 +123,7 @@ const shipmentNodes: ShipmentNode[] = [
     region: "asia",
     transportMode: "Air",
     shipments: [
-      { id: "SH009", start: "Mumbai, India", destination: "Shanghai, China", status: "On-time", eta: "2023-06-16", transportMode: "Ocean", product: "Petroleum Products"},
+      { id: "SH009", start: "Mumbai, India", destination: "Shanghai, China", status: "On-time", eta: "2023-06-16", transportMode: "Air", product: "Petroleum Products"},
       { id: "SH023", start: "London, UK", destination: "Mumbai, India", status: "delayed", eta: "2023-06-18", transportMode: "Air", product: "Pharmaceuticals"},
       { id: "SH113", start: "Mumbai, India", destination: "Paris, France", status: "On-time", eta: "2023-07-18", transportMode: "Air", product: "Textiles"},
       { id: "SH114", start: "Mumbai, India", destination: "Tokyo, Japan", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Glassware"},
@@ -139,9 +139,9 @@ const shipmentNodes: ShipmentNode[] = [
     region: "asia",
     transportMode: "Air",
     shipments: [
-      { id: "SH010", start: "Shanghai, China", destination: "Tokyo, Japan", status: "On-time", eta: "2023-06-20", transportMode: "Ocean", product: "Electronics"},
-      { id: "SH011", start: "Shanghai, China", destination: "Sydney, Australia", status: "delayed", eta: "2023-06-22", transportMode: "Ocean", product: "Consumer Goods"},
-      { id: "SH024", start: "Los Angeles, USA", destination: "Shanghai, China", status: "On-time", eta: "2023-06-25", transportMode: "Ocean", product: "Agricultural Products"},
+      { id: "SH010", start: "Shanghai, China", destination: "Tokyo, Japan", status: "On-time", eta: "2023-06-20", transportMode: "Air", product: "Electronics"},
+      { id: "SH011", start: "Shanghai, China", destination: "Sydney, Australia", status: "delayed", eta: "2023-06-22", transportMode: "Air", product: "Consumer Goods"},
+      { id: "SH024", start: "Los Angeles, USA", destination: "Shanghai, China", status: "On-time", eta: "2023-06-25", transportMode: "Air", product: "Agricultural Products"},
       { id: "SH116", start: "Shanghai, China", destination: "Bangkok, Thailand", status: "On-time", eta: "2023-06-28", transportMode: "Air", product: "Textiles"},
       { id: "SH117", start: "Shanghai, China", destination: "Mumbai, India", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Jewelry"}
     ]
@@ -156,7 +156,7 @@ const shipmentNodes: ShipmentNode[] = [
     transportMode: "Air",
     shipments: [
       { id: "SH012", start: "Tokyo, Japan", destination: "New York, USA", status: "On-time", eta: "2023-06-17", transportMode: "Air", product: "Automotive Parts"},
-      { id: "SH025", start: "Sydney, Australia", destination: "Tokyo, Japan", status: "delayed", eta: "2023-06-19", transportMode: "Ocean", product: "Agricultural Products"},
+      { id: "SH025", start: "Sydney, Australia", destination: "Tokyo, Japan", status: "delayed", eta: "2023-06-19", transportMode: "Air", product: "Agricultural Products"},
       { id: "SH118", start: "Tokyo, Japan", destination: "Berlin, Germany", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Medical Devices"},
       { id: "SH119", start: "Tokyo, Japan", destination: "Mumbai, India", status: "On-time", eta: "2023-07-12", transportMode: "Air", product: "Consumer Electronics"},
       { id: "SH120", start: "Tokyo, Japan", destination: "Seoul, South Korea", status: "On-time", eta: "2023-07-14", transportMode: "Air", product: "Consumer Goods"}
@@ -171,9 +171,9 @@ const shipmentNodes: ShipmentNode[] = [
     region: "africa",
     transportMode: "Air",
     shipments: [
-      { id: "SH013", start: "Lagos, Nigeria", destination: "London, UK", status: "delayed", eta: "On Hold", transportMode: "Ocean", product: "Petroleum Products"},
-      { id: "SH014", start: "Lagos, Nigeria", destination: "Hamburg, Germany", status: "On-time", eta: "2023-06-30", transportMode: "Ocean", product: "Agricultural Products"},
-      { id: "SH026", start: "São Paulo, Brazil", destination: "Lagos, Nigeria", status: "major-delay", eta: "2023-06-24", transportMode: "Ocean", product: "Construction Materials"},
+      { id: "SH013", start: "Lagos, Nigeria", destination: "London, UK", status: "delayed", eta: "On Hold", transportMode: "Air", product: "Petroleum Products"},
+      { id: "SH014", start: "Lagos, Nigeria", destination: "Hamburg, Germany", status: "On-time", eta: "2023-06-30", transportMode: "Air", product: "Agricultural Products"},
+      { id: "SH026", start: "São Paulo, Brazil", destination: "Lagos, Nigeria", status: "major-delay", eta: "2023-06-24", transportMode: "Air", product: "Construction Materials"},
       { id: "SH121", start: "Lagos, Nigeria", destination: "Paris, France", status: "On-time", eta: "2023-07-20", transportMode: "Air", product: "Fruit"},
       { id: "SH122", start: "Lagos, Nigeria", destination: "Nairobi, Kenya", status: "On-time", eta: "2023-08-01", transportMode: "Air", product: "Textiles"}
     ]
@@ -188,7 +188,7 @@ const shipmentNodes: ShipmentNode[] = [
     transportMode: "Air",
     shipments: [
       { id: "SH015", start: "São Paulo, Brazil", destination: "Miami, USA", status: "On-time", eta: "2023-06-15", transportMode: "Air", product: "Agricultural Products"},
-      { id: "SH027", start: "Shanghai, China", destination: "São Paulo, Brazil", status: "On-time", eta: "2023-06-27", transportMode: "Ocean", product: "Electronics"},
+      { id: "SH027", start: "Shanghai, China", destination: "São Paulo, Brazil", status: "On-time", eta: "2023-06-27", transportMode: "Air", product: "Electronics"},
       { id: "SH123", start: "São Paulo, Brazil", destination: "Accra, Ghana", status: "major-delay", eta: "On Hold", transportMode: "Air", product: "Tech Goods"},
       { id: "SH124", start: "São Paulo, Brazil", destination: "Dubai, UAE", status: "delayed", eta: "2023-07-30", transportMode: "Air", product: "Machinery"},
       { id: "SH125", start: "São Paulo, Brazil", destination: "Bogota, Colombia", status: "On-time", eta: "2023-07-29", transportMode: "Air", product: "Textiles"}
@@ -226,7 +226,7 @@ const routes = [
   { from: "7", to: "11" },
 ]
 
-export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemoveRegion }: WorldMapProps) {
+export function WorldMap({ selectedRegions, selectedTransport, shipmentId, onRemoveRegion }: WorldMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<google.maps.Map | null>(null)
   const markersRef = useRef<google.maps.Marker[]>([])
@@ -256,25 +256,25 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
   }, [])
 
   const filteredNodes = useCallback(() => {
-    return shipmentNodes.filter((node) => {
-      // Filter by region
-      if (selectedRegions.length > 0 && !selectedRegions.includes(node.region)) {
-        return false
-      }
-      
-      // Filter by shipment ID
-      if (shipmentId && !node.shipments.some(s => s.id.toLowerCase().includes(shipmentId.toLowerCase()))) {
-        return false
-      }
-      
-      // Filter by product
-      if (selectedProduct && !node.shipments.some(s => s.product?.toLowerCase().includes(selectedProduct.toLowerCase()))) {
-        return false
-      }
-      
-      return true
-    })
-  }, [selectedRegions, selectedProduct, shipmentId])
+  return shipmentNodes.filter((node) => {
+    // Filter by region
+    if (selectedRegions.length > 0 && !selectedRegions.includes(node.region)) {
+      return false
+    }
+    
+    // Filter by shipment ID
+    if (shipmentId && !node.shipments.some(s => s.id.toLowerCase().includes(shipmentId.toLowerCase()))) {
+      return false
+    }
+    
+    // Filter by transport mode
+    if (selectedTransport && !node.shipments.some(s => s.transportMode.toLowerCase().includes(selectedTransport.toLowerCase()))) {
+      return false
+    }
+    
+    return true
+  })
+}, [selectedRegions, selectedTransport, shipmentId]) // Changed from selectedProduct
 
   useEffect(() => {
     const loader = new Loader({
@@ -285,28 +285,60 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
     loader.load().then(() => {
       if (mapRef.current && !mapInstance.current) {
         const newMap = new google.maps.Map(mapRef.current, {
-          center: { lat: 20, lng: 0 },
-          zoom: 2,
-          styles: [
-            {
-              featureType: "landscape",
-              stylers: [{ hue: "#00FF00" }, { saturation: -50 }, { lightness: 50 }],
-            },
-            {
-              featureType: "water",
-              stylers: [{ color: "#dbeafe" }],
-            },
-            {
-              featureType: "administrative.country",
-              elementType: "geometry.stroke",
-              stylers: [{ color: "#9ca3af" }, { weight: 1 }],
-            },
-          ],
-          disableDefaultUI: false,
-          zoomControl: true,
-          scrollwheel: false,
-          gestureHandling: "cooperative",
-        })
+  center: { lat: 20, lng: 0 },
+  zoom: 2,
+  styles: [
+    {
+      featureType: "all",
+      elementType: "labels",
+      stylers: [{ visibility: "off" }]
+    },
+    {
+      featureType: "administrative",
+      elementType: "geometry.stroke",
+      stylers: [{ visibility: "off" }]
+    },
+    {
+      featureType: "administrative.country",
+      elementType: "geometry.stroke",
+      stylers: [
+        { visibility: "on" },
+        { color: "#000000" },
+        { weight: 1 }
+      ]
+    },
+    {
+      featureType: "landscape",
+      elementType: "geometry",
+      stylers: [{ color: "#ffffff" }]
+    },
+    {
+      featureType: "poi",
+      elementType: "all",
+      stylers: [{ visibility: "off" }]
+    },
+    {
+      featureType: "road",
+      elementType: "all",
+      stylers: [{ visibility: "off" }]
+    },
+    {
+      featureType: "transit",
+      elementType: "all",
+      stylers: [{ visibility: "off" }]
+    },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [{ color: "#ffffff" }]
+    }
+  ],
+  disableDefaultUI: true,
+  zoomControl: true,
+  scrollwheel: false,
+  gestureHandling: "cooperative",
+});
+
 
         mapInstance.current = newMap
         updateMapMarkersAndRoutes()
@@ -557,7 +589,7 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
 
   useEffect(() => {
     updateMapMarkersAndRoutes()
-  }, [selectedRegions, selectedProduct, shipmentId, updateMapMarkersAndRoutes])
+  }, [selectedRegions, selectedTransport , shipmentId, updateMapMarkersAndRoutes])
 
   return (
     <div
@@ -598,57 +630,58 @@ export function WorldMap({ selectedRegions, selectedProduct, shipmentId, onRemov
         </div>
       )}
 
-      {showFilters && (selectedRegions.length > 0 || selectedProduct || shipmentId) && (
-        <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-md rounded-xl p-5 shadow-2xl border-2 border-white/50 max-w-sm z-10">
-          <div className="flex justify-between items-center mb-4">
-            <h4 className="text-lg font-bold text-slate-800">Active Filters</h4>
-            <button
-              onClick={() => setShowFilters(false)}
-              className="text-slate-400 hover:text-slate-700 transition-colors text-xl"
-              aria-label="Close"
-              type="button"
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M6 6L14 14M14 6L6 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-          </div>
-          <div className="space-y-3">
-            {selectedRegions.length > 0 && (
-              <div>
-                <p className="text-sm font-medium text-slate-600 mb-2">Regions:</p>
-                <div className="flex flex-wrap gap-2">
-                  {selectedRegions.map((region) => (
-                    <Badge
-                      key={region}
-                      variant="outline"
-                      className="text-xs capitalize bg-blue-50 text-blue-800 border-blue-200"
-                    >
-                      {region.replace("-", " ")}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-            {selectedProduct && (
-              <div>
-                <p className="text-sm font-medium text-slate-600 mb-2">Product:</p>
-                <Badge variant="outline" className="text-xs bg-green-50 text-green-800 border-green-200">
-                  {selectedProduct}
-                </Badge>
-              </div>
-            )}
-            {shipmentId && (
-              <div>
-                <p className="text-sm font-medium text-slate-600 mb-2">Shipment ID:</p>
-                <Badge variant="outline" className="text-xs bg-purple-50 text-purple-800 border-purple-200">
-                  {shipmentId}
-                </Badge>
-              </div>
-            )}
+      {showFilters && (selectedRegions.length > 0 || selectedTransport || shipmentId) && (
+  <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-md rounded-xl p-5 shadow-2xl border-2 border-white/50 max-w-sm z-10">
+    <div className="flex justify-between items-center mb-4">
+      <h4 className="text-lg font-bold text-slate-800">Active Filters</h4>
+      <button
+        onClick={() => setShowFilters(false)}
+        className="text-slate-400 hover:text-slate-700 transition-colors text-xl"
+        aria-label="Close"
+        type="button"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M6 6L14 14M14 6L6 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div className="space-y-3">
+      {selectedRegions.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-slate-600 mb-2">Regions:</p>
+          <div className="flex flex-wrap gap-2">
+            {selectedRegions.map((region) => (
+              <Badge
+                key={region}
+                variant="outline"
+                className="text-xs capitalize bg-blue-50 text-blue-800 border-blue-200"
+              >
+                {region.replace("-", " ")}
+              </Badge>
+            ))}
           </div>
         </div>
       )}
+      {selectedTransport && (
+        <div>
+          <p className="text-sm font-medium text-slate-600 mb-2">Transport:</p>
+          <Badge variant="outline" className="text-xs bg-green-50 text-green-800 border-green-200">
+            {selectedTransport}
+          </Badge>
+        </div>
+      )}
+      {shipmentId && (
+        <div>
+          <p className="text-sm font-medium text-slate-600 mb-2">Shipment ID:</p>
+          <Badge variant="outline" className="text-xs bg-purple-50 text-purple-800 border-purple-200">
+            {shipmentId}
+          </Badge>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
 
       {showStats && (
         <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-md rounded-xl p-4 shadow-2xl border-2 border-white/50 z-10">
